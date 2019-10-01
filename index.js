@@ -1,5 +1,8 @@
 import React from 'react';
 import {
+  asset,
+  Image,
+  NativeModules,
   AppRegistry,
   StyleSheet,
   Text,
@@ -7,8 +10,40 @@ import {
   VrButton
 } from 'react-360';
 import { connect, changeRoom } from './Store';
+// to add sound import AudioModule
+const { AudioModule } = NativeModules;
 
 
+
+class AudioPanel extends React.Component {
+
+  playAmbientMusic() {
+    // play music, source is the music
+    AudioModule.playEnvironmental({
+      source: asset('audio/ambient.wav'),
+      volume: 0.3
+    })
+  }
+
+  stopAmbientMusic() {
+    AudioModule.stopEnvironmental()
+  }
+
+
+  render() {
+    return (
+      <View style={styles.audioPanel}>
+        <VrButton onClick={() => this.playAmbientMusic()}>
+          <Image style={{ height: 50, width: 50 }} source={asset('audioOn.png')} />
+        </VrButton>
+
+        <VrButton onClick={() => this.stopAmbientMusic()}>
+          <Image style={{ height: 50, width: 50 }} source={asset('audioOff.png')} />
+        </VrButton>
+      </View>
+    )
+  }
+}
 
 
 // BUTTON WAS SEPARATED INTO ITS OWN COMPONENT TO BE ABLE TO SET HOVER PROPERTY
@@ -53,6 +88,7 @@ export default class ButtonInfoPanel extends React.Component {
         <View style={styles.buttonPanel}>
           <Text style={styles.header}>Room Selection</Text>
           {this.createRoomButtons(this.props.adjacentRooms)}
+          <AudioPanel />
         </View>
       </View>
     );
@@ -88,6 +124,9 @@ const ConnectedHouseInfo = connect(InfoPanel)
 
 // THIS ARE THE STYLES.
 const styles = StyleSheet.create({
+  audioPanel: {
+    flexDirection: "row"
+  },
   infoPanel: {
     width: 400,
     height: 400,
@@ -125,6 +164,13 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontWeight: 'bold',
     textAlign: 'center'
+  },
+  audioButton: {
+    width: 50,
+    height: 50,
+    backgroundColor: 'rgb(0,204,102)',
+    borderColor: 'rgb(255,255,255)',
+    borderWidth: 2,
   }
 });
 
